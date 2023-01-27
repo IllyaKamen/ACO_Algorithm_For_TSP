@@ -1,10 +1,10 @@
 import kotlin.math.pow
 import kotlin.random.Random
+import kotlin.reflect.jvm.internal.impl.renderer.DescriptorRenderer.ValueParametersHandler.DEFAULT
 
-class ACOAlgorithm(private val startX: Int, private val startY: Int = 0, val defaultEdges: Edges) {
+class ACOAlgorithm(val startNode: Node, val defaultEdges: Edges, val defaultVision: Array<DoubleArray>) {
     val grid = Grid()
 
-    val startNode = Node(startX, startY, defaultEdges)
     val ant = Ant(startNode)
     val pheromones = AntPheromones()
     val M = 30
@@ -15,19 +15,20 @@ class ACOAlgorithm(private val startX: Int, private val startY: Int = 0, val def
     fun move(){
         pheromones.setDefaultPheromones()
         var newNode: Node
-        while(counter!=9){
-            if (counter == 0){
-                newNode = startNode
-                visited.add(newNode)
-                startNode.visited = true
-            }
-
-            else{
+        newNode = startNode
+        visited.add(newNode)
+        startNode.visited = true
+        goToNextNode(startNode)
+        while(counter!=grid.cols){
+//            if (counter == 0){
+//                newNode = startNode
+//                visited.add(newNode)
+//                startNode.visited = true
+//            }
+//            else{
                 val fromNode = visited.last()
                 newNode = goToNextNode(fromNode)
-//                println(newNode.nodeX)
-            }
-//            println(getP(newNode).forEach { i -> getP(newNode)[i.toInt()] })
+//            }
             counter++
         }
 
@@ -35,20 +36,24 @@ class ACOAlgorithm(private val startX: Int, private val startY: Int = 0, val def
     }
 
     fun goToNextNode(fromNode: Node): Node{
+        println("I start from node ${fromNode.nodeX}")
+        for ((index) in ant.vision.withIndex()){
+            ant.vision[index][fromNode.nodeX] = 0.0
+        }
         val nextX = getWayNextX(fromNode)
-        val nextNode: Node
-        grid.printArray(ant.vision)
+        println(getWayNextX(fromNode))
         if (nextX!=-1){
-            nextNode = Node(nextX, startY, defaultEdges)
+            val nextNode = Node(nextX,  0, defaultEdges)
             nextNode.visited = true
             visited.add(nextNode)
-            for ((index) in ant.getVisionRow(nextNode).withIndex()){
-                ant.vision[index][fromNode.nodeX] = 0.0
-            }
             grid.printArray(ant.vision)
+            println("Now im on node num ${nextNode.nodeX}")
             return nextNode
         }
-        return startNode
+        else{
+            return visited.first()
+        }
+
     }
 
 
@@ -57,19 +62,17 @@ class ACOAlgorithm(private val startX: Int, private val startY: Int = 0, val def
         var nextX = 0
         val random = Random.nextDouble(0.0, 1.0)
         val P = getP(node)
-        println(random)
         val edges = mutableListOf<Double>()
         for ((index) in  P.withIndex()){
             edges.add(P[index])
-            println(P[index])
         }
         var res = 0.0
         for ((index) in edges.withIndex()){
             if (random > res && random <= res+edges[index] && edges[index] > 0.0) {
-                nextX = index
+                return index
             }
             else {
-                if (index==edges.size-1){return  -1}
+                if (index==edges.size-1){return -1}
                 else{res+=edges[index]}
             }
         }
@@ -93,11 +96,19 @@ class ACOAlgorithm(private val startX: Int, private val startY: Int = 0, val def
     fun calcSumOfAll (node: Node): Double{
         var result = 0.0
         val indexP = node.nodeX
-        println(indexP)
         for ((index) in node.getRow(indexP).withIndex()){
             result += (pheromones.getRow(indexP)[index].pow(ant.alpha) *
                     ant.getVisionRow(node)[index].pow(ant.beta))
         }
+
+        if (result == 0.0){
+            ant.vision = defaultVision
+            for ((index) in node.getRow(indexP).withIndex()){
+                result += (pheromones.getRow(indexP)[index].pow(ant.alpha) *
+                        ant.getVisionRow(node)[index].pow(ant.beta))
+            }
+        }
+
         return result
     }
 

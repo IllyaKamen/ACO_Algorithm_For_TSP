@@ -4,27 +4,21 @@ fun main() {
     val grid = Grid()
     val defaultEdges = Edges(setDefaultEdges())
 
+
     grid.printArray(defaultEdges.edges)
 
     val node = Node(2,0, defaultEdges)
     val ant = Ant(node)
-
+    val defaultVision = ant.getVisionOfAnt(node)
     grid.printArray(ant.getVisionOfAnt(node))
 
-    for ((index) in ant.getVisionRow(node).withIndex()){
-        println(ant.getVisionRow(node)[index])
-    }
-
-    val algo = ACOAlgorithm(1, 0,  defaultEdges)
+    val algo = ACOAlgorithm(node,  defaultEdges, defaultVision)
 
     grid.printArray(algo.pheromones.setDefaultPheromones())
 
-//    println(algo.calcSumOfAll(node))
-//    println("Move")
-//    algo.move()
+    algo.move()
 
-    algo.goToNextNode(node)
-
+//    algo.goToNextNode(node)
 
 }
 

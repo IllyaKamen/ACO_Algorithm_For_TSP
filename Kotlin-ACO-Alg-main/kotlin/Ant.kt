@@ -6,7 +6,7 @@ class Ant (val node: Node) {
     val ro = 0.4
     val lMin = 5
 
-    val vision = Array(node.defaultEdges.edges.size) { DoubleArray(node.defaultEdges.edges.size) }
+    var vision = Array(node.defaultEdges.edges.size) { DoubleArray(node.defaultEdges.edges.size) }
 
 
     fun getVisionOfAnt (onNode: Node): Array<DoubleArray> {
@@ -24,7 +24,7 @@ class Ant (val node: Node) {
     }
 
     fun getVisionRow(node: Node): DoubleArray {
-        getVisionOfAnt(node)
+
         return vision[node.nodeX]
     }
 }
