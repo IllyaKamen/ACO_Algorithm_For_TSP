@@ -1,4 +1,4 @@
-class Grid(r: Int = 10, c: Int = 10) {
+class Grid(r: Int = 150, c: Int = 150) {
     // Initialize rows x cols
     val rows = r
     val cols = c

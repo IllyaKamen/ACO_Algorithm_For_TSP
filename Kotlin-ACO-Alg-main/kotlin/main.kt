@@ -4,19 +4,33 @@ fun main() {
     val grid = Grid()
     val defaultEdges = Edges(setDefaultEdges())
 
+    val antPheromones = AntPheromones()
+
+    antPheromones.setDefaultPheromones()
+//    grid.printArray(antPheromones.pheromones)
+//    for ((index) in antPheromones.pheromones.withIndex()){
+//        for ((indexs) in antPheromones.pheromones.withIndex()) {
+//            println(antPheromones.pheromones[index][indexs])
+//        }
+//    }
 
     grid.printArray(defaultEdges.edges)
 
-    val node = Node(2,0, defaultEdges)
+    val node = Node(Random.nextInt(1, 150), Random.nextInt(1, 150), defaultEdges)
     val ant = Ant(node)
     val defaultVision = ant.getVisionOfAnt(node)
     grid.printArray(ant.getVisionOfAnt(node))
 
-    val algo = ACOAlgorithm(node,  defaultEdges, defaultVision)
+    antPheromones.setDefaultPheromones()
 
-    grid.printArray(algo.pheromones.setDefaultPheromones())
+    val algo = ACOAlgorithm(node,  defaultEdges, defaultVision, antPheromones.pheromones)
+
+    grid.printArray(antPheromones.pheromones)
 
     algo.move()
+    for ((index) in algo.visited.withIndex()){
+        println(algo.visited[index].x)
+    }
 
 //    algo.goToNextNode(node)
 

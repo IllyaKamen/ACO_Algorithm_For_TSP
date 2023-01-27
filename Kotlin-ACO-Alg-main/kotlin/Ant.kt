@@ -1,10 +1,7 @@
 import kotlin.random.Random
 
 class Ant (val node: Node) {
-    val alpha = 2
-    val beta = 4
-    val ro = 0.4
-    val lMin = 5
+
 
     var vision = Array(node.defaultEdges.edges.size) { DoubleArray(node.defaultEdges.edges.size) }
 
